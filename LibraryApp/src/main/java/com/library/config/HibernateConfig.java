@@ -17,7 +17,7 @@ public class HibernateConfig {
                 Configuration config = new Configuration();
                 config.setProperty(AvailableSettings.JAKARTA_JDBC_URL, "jdbc:mysql://localhost:3306/library_db");
                 config.setProperty(AvailableSettings.JAKARTA_JDBC_USER, "root");
-                config.setProperty(AvailableSettings.JAKARTA_JDBC_PASSWORD, "Malini@2004");
+                config.setProperty(AvailableSettings.JAKARTA_JDBC_PASSWORD, "root");
                 config.setProperty(AvailableSettings.JAKARTA_JDBC_DRIVER, "com.mysql.cj.jdbc.Driver");
 
                 config.setProperty(AvailableSettings.DIALECT, "org.hibernate.dialect.MySQLDialect");
