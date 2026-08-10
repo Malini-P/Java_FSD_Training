@@ -1,0 +1,1358 @@
+{
+  "info": {
+    "name": "AMS – Asset Management System",
+    "_postman_id": "ams-hexaware-collection",
+    "description": "Complete API collection for AMS Capstone Project (Hexaware).\n\n🔐 HOW TO USE:\n1. Run '01. Register Employee' first to create an account\n2. Run '03. Login as Employee' → copy the token from the response\n3. Click the collection name → Variables → paste token in emp_token\n4. Run '04. Login as Admin' (admin/admin123) → paste token in admin_token\n5. All other requests will work automatically using those tokens\n\nBase URL: http://localhost:8080\n\n📦 v2 CATEGORY APIS (added):\n- GET /api/v2/categories/all-with-count → ADMIN only\n- GET /api/v2/categories/search?name={keyword} → any authenticated user\n- GET /api/v2/categories/get/{id} → any authenticated user",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01. Register Employee (Public)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"john.doe\",\n  \"password\": \"john@123\",\n  \"role\": \"EMPLOYEE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users/add",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "users",
+            "add"
+          ]
+        },
+        "description": "Register a new employee account. This endpoint is public — no token needed.\n\nExpected Response: 200 OK with UserRespDto (id, username, role, createdAt)"
+      }
+    },
+    {
+      "name": "02. Register Admin (Public)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin@123\",\n  \"role\": \"ADMIN\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users/add",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "users",
+            "add"
+          ]
+        },
+        "description": "Register an admin account. Public endpoint — no token needed.\n\nExpected Response: 200 OK with UserRespDto"
+      }
+    },
+    {
+      "name": "03. Login as Employee → Get JWT Token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "john.doe"
+            },
+            {
+              "key": "password",
+              "value": "john@123"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/auth/login",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Login using Basic Auth (username + password).\n\nSpring Security verifies credentials → generates JWT token.\n\n✅ AFTER RUNNING:\nCopy the 'token' value from the response → paste it in Collection Variables → emp_token\n\nExpected Response:\n{\n  \"username\": \"john.doe\",\n  \"token\": \"eyJhbGciO...\"\n}"
+      }
+    },
+    {
+      "name": "04. Login as Admin → Get JWT Token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "admin"
+            },
+            {
+              "key": "password",
+              "value": "admin@123"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/auth/login",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Login as admin using Basic Auth.\n\n✅ AFTER RUNNING:\nCopy the 'token' value from response → paste in Collection Variables → admin_token\n\nExpected Response:\n{\n  \"username\": \"admin\",\n  \"token\": \"eyJhbGciO...\"\n}"
+      }
+    },
+    {
+      "name": "05. Get My Profile (Employee)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/auth/profile",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "profile"
+          ]
+        },
+        "description": "Returns the logged-in employee's profile details extracted from the JWT token.\n\nExpected Response:\n{\n  \"id\": 1,\n  \"username\": \"john.doe\",\n  \"role\": \"EMPLOYEE\",\n  \"createdAt\": \"2024-01-15T10:00:00Z\"\n}"
+      }
+    },
+    {
+      "name": "06. Get My Profile (Admin)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/auth/profile",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "profile"
+          ]
+        },
+        "description": "Returns the admin's profile details extracted from JWT.\n\nExpected Response:\n{\n  \"id\": 2,\n  \"username\": \"admin\",\n  \"role\": \"ADMIN\",\n  \"createdAt\": \"2024-01-15T09:00:00Z\"\n}"
+      }
+    },
+    {
+      "name": "07. Forgot Password (Public)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"john.doe\",\n  \"newPassword\": \"newpass@456\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/auth/forgot-password",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "forgot-password"
+          ]
+        },
+        "description": "Resets password for the given username. Public endpoint — no token needed.\n\nExpected Response: 200 OK\n\"Password reset successfully\""
+      }
+    },
+    {
+      "name": "08. Get All Users (Admin Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/users/all",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "users",
+            "all"
+          ]
+        },
+        "description": "Admin fetches all registered employees.\n\nExpected Response: Array of UserRespDto objects\n[\n  { \"id\": 1, \"username\": \"john.doe\", \"role\": \"EMPLOYEE\", ... },\n  ...\n]"
+      }
+    },
+    {
+      "name": "09. Update User (Admin Only)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"john.updated\",\n  \"password\": \"john@123\",\n  \"role\": \"EMPLOYEE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users/update/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "users",
+            "update",
+            "1"
+          ]
+        },
+        "description": "Admin updates a user by ID. Replace '1' in the URL with the actual user ID.\n\nExpected Response: Updated UserRespDto"
+      }
+    },
+    {
+      "name": "10. Delete User (Admin Only)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/users/delete/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "users",
+            "delete",
+            "1"
+          ]
+        },
+        "description": "Admin deletes an employee by ID. Replace '1' with the actual user ID.\n\nExpected Response: 200 OK\n\"User deleted successfully\""
+      }
+    },
+    {
+      "name": "11. Add Category (Admin Only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"categoryName\": \"Laptop\",\n  \"description\": \"All laptop and notebook computers\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/categories/add",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "categories",
+            "add"
+          ]
+        },
+        "description": "Admin adds a new asset category.\n\nExpected Response: AssetCategory object\n{\n  \"id\": 1,\n  \"categoryName\": \"Laptop\",\n  \"description\": \"All laptop and notebook computers\"\n}"
+      }
+    },
+    {
+      "name": "12. Get All Categories (Auth Required)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/categories/all",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "categories",
+            "all"
+          ]
+        },
+        "description": "Fetches all asset categories. Both Admin and Employee can access this.\n\nExpected Response: Array of AssetCategory objects"
+      }
+    },
+    {
+      "name": "13. Update Category (Admin Only)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"categoryName\": \"Laptop & Notebooks\",\n  \"description\": \"All portable computers including laptops and ultrabooks\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/categories/update/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "categories",
+            "update",
+            "1"
+          ]
+        },
+        "description": "Admin updates an existing category by ID. Replace '1' with actual category ID.\n\nExpected Response: Updated AssetCategory object"
+      }
+    },
+    {
+      "name": "14. Delete Category (Admin Only)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/categories/delete/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "categories",
+            "delete",
+            "1"
+          ]
+        },
+        "description": "Admin deletes a category by ID. Replace '1' with actual category ID.\n\nNote: If assets are linked to this category, deletion may fail."
+      }
+    },
+    {
+      "name": "15. [v2] Get All Categories With Asset Count (Admin Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v2/categories/all-with-count",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "categories",
+            "all-with-count"
+          ]
+        },
+        "description": "Admin fetches all categories along with the number of assets in each.\n\nThis is the v2 enhanced endpoint used by the Manage Categories admin screen.\n\nRequires ADMIN authority (employee tokens get 403).\n\nExpected Response: Array of CategoryWithCountDto\n[\n  { \"id\": 1, \"categoryName\": \"Laptops\", \"description\": \"All Laptop computers\", \"assetCount\": 3 },\n  ...\n]"
+      }
+    },
+    {
+      "name": "16. [v2] Search Categories By Name (Auth Required)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v2/categories/search?name=laptop",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "categories",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "name",
+              "value": "laptop",
+              "description": "Keyword to search for, case-insensitive partial match against category name"
+            }
+          ]
+        },
+        "description": "Search categories by name (case-insensitive, partial match).\n\nAny authenticated user (Employee or Admin) can call this.\n\nExpected Response: Array of matching CategoryRespDto\n[\n  { \"id\": 1, \"categoryName\": \"Laptops\", \"description\": \"All Laptop computers\" }\n]"
+      }
+    },
+    {
+      "name": "17. [v2] Get Category By ID With Total Assets (Auth Required)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v2/categories/get/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "categories",
+            "get",
+            "1"
+          ]
+        },
+        "description": "Get a single category by ID with its total asset count.\n\nAny authenticated user (Employee or Admin) can call this. Replace '1' with the actual category ID.\n\nExpected Response: CategoryWithCountDto\n{\n  \"id\": 1,\n  \"categoryName\": \"Laptops\",\n  \"description\": \"All Laptop computers\",\n  \"totalAssets\": 3,\n  \"apiVersion\": \"v2\"\n}"
+      }
+    },
+    {
+      "name": "18. Add Asset (Admin Only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"assetName\": \"Dell XPS 15\",\n  \"assetModel\": \"XPS-9500\",\n  \"serialNumber\": \"DL2024XPS001\",\n  \"assetStatus\": \"AVAILABLE\",\n  \"manufacturingDate\": \"2023-01-01T00:00:00Z\",\n  \"expiryDate\": \"2026-01-01T00:00:00Z\",\n  \"assetValue\": 85000.00\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/assets/add/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "assets",
+            "add",
+            "1"
+          ]
+        },
+        "description": "Admin adds a new asset under a category. The '1' at the end is the categoryId — change it to match your category.\n\nassetStatus values: AVAILABLE | ALLOCATED | UNDER_SERVICE\n\nExpected Response: AssetRespDto with all asset details"
+      }
+    },
+    {
+      "name": "19. Get All Assets - Page 1 (Auth Required)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/assets/all?page=0&size=7",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "assets",
+            "all"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0",
+              "description": "Page number (0-indexed)"
+            },
+            {
+              "key": "size",
+              "value": "7",
+              "description": "Number of items per page"
+            }
+          ]
+        },
+        "description": "Paginated list of all assets. Both Admin and Employee can access.\n\nExpected Response:\n{\n  \"data\": [ { assetId, assetName, assetModel, ... } ],\n  \"totalPages\": 3\n}"
+      }
+    },
+    {
+      "name": "20. Get All Assets - Page 2 (Auth Required)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/assets/all?page=1&size=7",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "assets",
+            "all"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "size",
+              "value": "7"
+            }
+          ]
+        },
+        "description": "Second page of assets. Change 'page' param to navigate pages (0-indexed)."
+      }
+    },
+    {
+      "name": "21. Get Asset By ID (Auth Required)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/assets/get-one/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "assets",
+            "get-one",
+            "1"
+          ]
+        },
+        "description": "Get full details of a single asset by its ID. Replace '1' with actual assetId.\n\nUsed in frontend when employee clicks on an asset card to see full details."
+      }
+    },
+    {
+      "name": "22. Get Available Assets Only (Auth Required)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/assets/available",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "assets",
+            "available"
+          ]
+        },
+        "description": "Returns only assets with status = AVAILABLE. Used in the Raise Asset Request dropdown.\n\nExpected Response: Array of AssetRespDto with assetStatus = AVAILABLE"
+      }
+    },
+    {
+      "name": "23. Update Asset (Admin Only)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"assetName\": \"Dell XPS 15 (Updated)\",\n  \"assetModel\": \"XPS-9500-2024\",\n  \"serialNumber\": \"DL2024XPS001\",\n  \"assetStatus\": \"AVAILABLE\",\n  \"manufacturingDate\": \"2023-06-01T00:00:00Z\",\n  \"expiryDate\": \"2027-06-01T00:00:00Z\",\n  \"assetValue\": 90000.00\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/assets/update/1/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "assets",
+            "update",
+            "1",
+            "1"
+          ]
+        },
+        "description": "Admin updates asset. URL pattern: /update/{assetId}/{categoryId}\nReplace first '1' with assetId, second '1' with categoryId.\n\nExpected Response: Updated AssetRespDto"
+      }
+    },
+    {
+      "name": "24. Delete Asset (Admin Only)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/assets/delete/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "assets",
+            "delete",
+            "1"
+          ]
+        },
+        "description": "Admin deletes an asset by ID. Replace '1' with actual assetId.\n\nExpected Response: 200 OK\n\"Asset deleted successfully\""
+      }
+    },
+    {
+      "name": "25. Upload Asset Image (Admin Only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "description": "Select an image file (JPG/PNG, max 5MB)"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/assets/1/upload-image",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "assets",
+            "1",
+            "upload-image"
+          ]
+        },
+        "description": "Admin uploads an image for an asset. Uses multipart/form-data.\nReplace '1' in URL with the actual assetId.\n\nIn Postman: Body → form-data → key='file' → type=File → choose image\n\nExpected Response: 200 OK\n\"Image uploaded successfully\""
+      }
+    },
+    {
+      "name": "26. Raise Asset Request (Employee Only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reason\": \"I need a laptop for my new project work from home assignment\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/asset-requests/add/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "asset-requests",
+            "add",
+            "1"
+          ]
+        },
+        "description": "Employee requests an available asset. '1' at the end is the assetId.\n\nThe employee username is automatically taken from the JWT token (Principal).\n\nExpected Response: AssetRequestRespDto with status = PENDING"
+      }
+    },
+    {
+      "name": "27. My Asset Requests (Employee Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/asset-requests/my",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "asset-requests",
+            "my"
+          ]
+        },
+        "description": "Employee views all their own asset requests.\n\nExpected Response: Array of AssetRequestRespDto\n[\n  { requestId, assetName, reason, requestStatus: PENDING, requestedAt, ... }\n]"
+      }
+    },
+    {
+      "name": "28. Get All Asset Requests (Admin Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/asset-requests/all",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "asset-requests",
+            "all"
+          ]
+        },
+        "description": "Admin views all asset requests from all employees.\n\nExpected Response: Array of all AssetRequestRespDto objects with different statuses"
+      }
+    },
+    {
+      "name": "29. Approve Asset Request (Admin Only)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/asset-requests/1/approve",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "asset-requests",
+            "1",
+            "approve"
+          ]
+        },
+        "description": "Admin approves an asset request by requestId. Replace '1' with actual request ID.\n\nThis triggers: request status → APPROVED + a new AssetAllocation record is created + asset status → ALLOCATED\n\nExpected Response: Updated AssetRequestRespDto with status = APPROVED"
+      }
+    },
+    {
+      "name": "30. Reject Asset Request (Admin Only)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/asset-requests/1/reject",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "asset-requests",
+            "1",
+            "reject"
+          ]
+        },
+        "description": "Admin rejects an asset request by requestId. Replace '1' with actual request ID.\n\nExpected Response: Updated AssetRequestRespDto with status = REJECTED"
+      }
+    },
+    {
+      "name": "31. Get All Allocations (Admin Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/asset-allocations/all",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "asset-allocations",
+            "all"
+          ]
+        },
+        "description": "Admin views all active and returned asset allocations.\n\nExpected Response: Array of AllocationRespDto\n[\n  { allocationId, assetName, employeeName, allocatedAt, returned, returnedAt }\n]"
+      }
+    },
+    {
+      "name": "32. My Allocations (Employee Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/asset-allocations/my",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "asset-allocations",
+            "my"
+          ]
+        },
+        "description": "Employee views all their own asset allocations (active and returned).\n\nExpected Response: Array of AllocationRespDto filtered to logged-in employee"
+      }
+    },
+    {
+      "name": "33. Return Asset (Employee Only)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/asset-allocations/1/return",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "asset-allocations",
+            "1",
+            "return"
+          ]
+        },
+        "description": "Employee returns an allocated asset. Replace '1' with the actual allocationId.\n\nThis triggers: allocation returned=true, returnedAt=now, asset status → AVAILABLE\n\nExpected Response: Updated AllocationRespDto with returned=true"
+      }
+    },
+    {
+      "name": "34. Raise Service Request (Employee Only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"issueDescription\": \"Laptop screen flickering and making noise when charging\",\n  \"issueType\": \"malfunction\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/service-requests/add/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "service-requests",
+            "add",
+            "1"
+          ]
+        },
+        "description": "Employee raises a service request for an allocated asset. '1' is the assetId.\n\nissueType examples: malfunction, repair, replacement, upgrade\n\nExpected Response: ServiceRequestRespDto with status = PENDING"
+      }
+    },
+    {
+      "name": "35. My Service Requests (Employee Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/service-requests/my",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "service-requests",
+            "my"
+          ]
+        },
+        "description": "Employee views all their own service requests.\n\nExpected Response: Array of ServiceRequestRespDto for the logged-in employee"
+      }
+    },
+    {
+      "name": "36. Get All Service Requests (Admin Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/service-requests/all",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "service-requests",
+            "all"
+          ]
+        },
+        "description": "Admin views all service requests from all employees.\n\nExpected Response: Array of all ServiceRequestRespDto objects"
+      }
+    },
+    {
+      "name": "37. Update Service Request Status (Admin Only)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/service-requests/1/update-status?serviceStatus=IN_PROGRESS",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "service-requests",
+            "1",
+            "update-status"
+          ],
+          "query": [
+            {
+              "key": "serviceStatus",
+              "value": "IN_PROGRESS",
+              "description": "Options: PENDING | IN_PROGRESS | RESOLVED"
+            }
+          ]
+        },
+        "description": "Admin updates the status of a service request. Replace '1' with actual serviceRequestId.\n\nserviceStatus options:\n- PENDING (default)\n- IN_PROGRESS\n- RESOLVED\n\nExpected Response: Updated ServiceRequestRespDto"
+      }
+    },
+    {
+      "name": "38. Update Service Status → RESOLVED (Admin Only)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/service-requests/1/update-status?serviceStatus=RESOLVED",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "service-requests",
+            "1",
+            "update-status"
+          ],
+          "query": [
+            {
+              "key": "serviceStatus",
+              "value": "RESOLVED"
+            }
+          ]
+        },
+        "description": "Admin marks a service request as RESOLVED. Replace '1' with actual ID.\n\nExpected Response: Updated ServiceRequestRespDto with status = RESOLVED"
+      }
+    },
+    {
+      "name": "39. Send Audit to All Employees (Admin Only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/audits/send-all",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "audits",
+            "send-all"
+          ]
+        },
+        "description": "Admin sends an audit request to ALL employees who have active allocations.\n\nCreates one AssetAudit record per employee with status = PENDING.\n\nExpected Response: Array of AuditRespDto for all created audit records"
+      }
+    },
+    {
+      "name": "40. Get All Audits (Admin Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/audits/all",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "audits",
+            "all"
+          ]
+        },
+        "description": "Admin views all audit requests with their current status.\n\nExpected Response: Array of AuditRespDto\n[\n  { id, employeeName, auditStatus: PENDING/VERIFIED/REJECTED, sentAt }\n]"
+      }
+    },
+    {
+      "name": "41. My Pending Audits (Employee Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/audits/my",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "audits",
+            "my"
+          ]
+        },
+        "description": "Employee views their own audit requests (sent by admin).\n\nExpected Response: Array of AuditRespDto for the logged-in employee"
+      }
+    },
+    {
+      "name": "42. Verify Audit (Employee Only)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/audits/1/verify",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "audits",
+            "1",
+            "verify"
+          ]
+        },
+        "description": "Employee confirms they have the asset — marks audit as VERIFIED.\nReplace '1' with the actual audit ID.\n\nExpected Response: Updated AuditRespDto with auditStatus = VERIFIED"
+      }
+    },
+    {
+      "name": "43. Reject Audit (Employee Only)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/audits/1/reject",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "audits",
+            "1",
+            "reject"
+          ]
+        },
+        "description": "Employee rejects the audit — they do not have the asset.\nReplace '1' with the actual audit ID.\n\nExpected Response: Updated AuditRespDto with auditStatus = REJECTED"
+      }
+    },
+    {
+      "name": "44. Admin Dashboard Stats (Admin Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/dashboard/admin-stats",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "dashboard",
+            "admin-stats"
+          ]
+        },
+        "description": "Admin dashboard summary statistics.\n\nExpected Response: AdminDashboardDto\n{\n  totalAssets, totalEmployees, totalAllocations,\n  pendingRequests, pendingAudits, ...\n}"
+      }
+    },
+    {
+      "name": "45. Employee Dashboard Stats (Employee Only)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/dashboard/employee-stats",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "dashboard",
+            "employee-stats"
+          ]
+        },
+        "description": "Employee dashboard summary stats for the logged-in user.\n\nExpected Response: EmployeeDashboardDto\n{\n  myAllocations, myPendingRequests, myServiceRequests, myPendingAudits\n}"
+      }
+    },
+    {
+      "name": "❌ 403 Test – Employee tries Admin endpoint",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/users/all",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "users",
+            "all"
+          ]
+        },
+        "description": "This should FAIL with 403 Forbidden.\n\nEmployee token does not have ADMIN authority, so Spring Security blocks access to /api/users/all.\n\nExpected Response: 403 Forbidden"
+      }
+    },
+    {
+      "name": "❌ 403 Test – Employee tries v2 Admin-only endpoint",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{emp_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v2/categories/all-with-count",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "categories",
+            "all-with-count"
+          ]
+        },
+        "description": "This should FAIL with 403 Forbidden.\n\n/api/v2/categories/all-with-count requires ADMIN authority. An employee token is authenticated but lacks the ADMIN role, so Spring Security blocks access.\n\nExpected Response: 403 Forbidden"
+      }
+    },
+    {
+      "name": "❌ 401 Test – No token at all",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/assets/all",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "assets",
+            "all"
+          ]
+        },
+        "description": "This should FAIL because no Authorization header is sent.\n\nExpected Response: 401 Unauthorized or 403"
+      }
+    },
+    {
+      "name": "❌ Validation Error Test – Empty asset name",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"assetName\": \"\",\n  \"assetStatus\": \"AVAILABLE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/assets/add/1",
+          "host": [
+            "http://localhost:8080"
+          ],
+          "path": [
+            "api",
+            "assets",
+            "add",
+            "1"
+          ]
+        },
+        "description": "This should FAIL with 400 Bad Request because assetName is blank.\n\n@NotBlank validation on AssetDto triggers GlobalExceptionHandler.\n\nExpected Response:\n{\n  \"assetName\": \"This field is mandatory\"\n}"
+      }
+    }
+  ]
+}
